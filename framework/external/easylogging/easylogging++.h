@@ -2701,13 +2701,10 @@ class Storage : base::NoCopy, public base::threading::ThreadSafe {
   }
 
   /// @brief Get attached logger ID of the current thread if exists. Requires std::thread.
-  inline std::string getThreadLoggerId() {
+  inline std::string getCurrentThreadLoggerId() {
     base::threading::ScopedLock scopedLock(m_threadIdLoggerIdLock);
     auto found = m_threadIdLoggerId.find(base::threading::getCurrentThreadId());
-    if (found == m_threadIdLoggerId.end()) {
-      return std::string();
-    }
-    return m_threadIdLoggerId.at(base::threading::getCurrentThreadId());
+    return (found == m_threadIdLoggerId.end()) ? std::string() : found->second;
   }
 
   /// @brief Sets thread name for current thread. Requires std::thread
@@ -3711,8 +3708,8 @@ class Helpers : base::StaticClass {
   static inline void attachLoggerIdThreadId(const std::string& logger_id) {
     ELPP->attachLoggerIdThreadId(logger_id);
   }
-  static inline const std::string getThreadLoggerId() {
-    return ELPP->getThreadLoggerId();
+  static inline const std::string getCurrentThreadLoggerId() {
+    return ELPP->getCurrentThreadLoggerId();
   }
   /// @brief Sets thread name for current thread. Requires std::thread
   static inline void setThreadName(const std::string& name) {
