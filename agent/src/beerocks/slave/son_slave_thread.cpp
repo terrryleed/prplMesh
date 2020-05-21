@@ -1656,9 +1656,7 @@ bool slave_thread::handle_cmdu_ap_manager_message(Socket *sd,
             return false;
         }
 
-        config_msg->iface_type()       = config.hostap_iface_type;
-        config_msg->channel()          = wlan_settings.channel;
-        config_msg->iface_filter_low() = config.backhaul_wireless_iface_filter_low;
+        config_msg->channel() = wlan_settings.channel;
 
         message_com::send_cmdu(ap_manager_socket, cmdu_tx);
 
