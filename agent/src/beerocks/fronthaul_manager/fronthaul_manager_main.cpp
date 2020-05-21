@@ -238,7 +238,7 @@ int main(int argc, char *argv[])
             break;
         }
 
-        // The ap_manager is the main process thread. After the ap_manager is finish the attach
+        // The ap_manager is the main process thread. After the ap_manager is finished the attach
         // process, start the monitor thread. There is no point to start it before.
         auto ap_manager_state = ap_manager.get_state();
         if (ap_manager_state < son::ap_manager_thread::eApManagerState::ATTACHED) {
