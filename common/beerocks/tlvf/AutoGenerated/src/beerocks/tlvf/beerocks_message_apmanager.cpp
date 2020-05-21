@@ -151,22 +151,13 @@ BaseClass(base->getBuffPtr(), base->getBuffRemainingBytes(), parse){
 }
 cACTION_APMANAGER_CONFIGURE::~cACTION_APMANAGER_CONFIGURE() {
 }
-beerocks::eIfaceType& cACTION_APMANAGER_CONFIGURE::iface_type() {
-    return (beerocks::eIfaceType&)(*m_iface_type);
-}
-
 uint8_t& cACTION_APMANAGER_CONFIGURE::channel() {
     return (uint8_t&)(*m_channel);
-}
-
-uint8_t& cACTION_APMANAGER_CONFIGURE::iface_filter_low() {
-    return (uint8_t&)(*m_iface_filter_low);
 }
 
 void cACTION_APMANAGER_CONFIGURE::class_swap()
 {
     tlvf_swap(8*sizeof(eActionOp_APMANAGER), reinterpret_cast<uint8_t*>(m_action_op));
-    tlvf_swap(8*sizeof(beerocks::eIfaceType), reinterpret_cast<uint8_t*>(m_iface_type));
 }
 
 bool cACTION_APMANAGER_CONFIGURE::finalize()
@@ -199,9 +190,7 @@ bool cACTION_APMANAGER_CONFIGURE::finalize()
 size_t cACTION_APMANAGER_CONFIGURE::get_initial_size()
 {
     size_t class_size = 0;
-    class_size += sizeof(beerocks::eIfaceType); // iface_type
     class_size += sizeof(uint8_t); // channel
-    class_size += sizeof(uint8_t); // iface_filter_low
     return class_size;
 }
 
@@ -211,17 +200,7 @@ bool cACTION_APMANAGER_CONFIGURE::init()
         TLVF_LOG(ERROR) << "Not enough available space on buffer. Class init failed";
         return false;
     }
-    m_iface_type = reinterpret_cast<beerocks::eIfaceType*>(m_buff_ptr__);
-    if (!buffPtrIncrementSafe(sizeof(beerocks::eIfaceType))) {
-        LOG(ERROR) << "buffPtrIncrementSafe(" << std::dec << sizeof(beerocks::eIfaceType) << ") Failed!";
-        return false;
-    }
     m_channel = reinterpret_cast<uint8_t*>(m_buff_ptr__);
-    if (!buffPtrIncrementSafe(sizeof(uint8_t))) {
-        LOG(ERROR) << "buffPtrIncrementSafe(" << std::dec << sizeof(uint8_t) << ") Failed!";
-        return false;
-    }
-    m_iface_filter_low = reinterpret_cast<uint8_t*>(m_buff_ptr__);
     if (!buffPtrIncrementSafe(sizeof(uint8_t))) {
         LOG(ERROR) << "buffPtrIncrementSafe(" << std::dec << sizeof(uint8_t) << ") Failed!";
         return false;

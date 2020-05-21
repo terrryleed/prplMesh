@@ -67,9 +67,7 @@ class cACTION_APMANAGER_CONFIGURE : public BaseClass
         static eActionOp_APMANAGER get_action_op(){
             return (eActionOp_APMANAGER)(ACTION_APMANAGER_CONFIGURE);
         }
-        beerocks::eIfaceType& iface_type();
         uint8_t& channel();
-        uint8_t& iface_filter_low();
         void class_swap() override;
         bool finalize() override;
         static size_t get_initial_size();
@@ -77,9 +75,7 @@ class cACTION_APMANAGER_CONFIGURE : public BaseClass
     private:
         bool init();
         eActionOp_APMANAGER* m_action_op = nullptr;
-        beerocks::eIfaceType* m_iface_type = nullptr;
         uint8_t* m_channel = nullptr;
-        uint8_t* m_iface_filter_low = nullptr;
 };
 
 class cACTION_APMANAGER_JOINED_NOTIFICATION : public BaseClass
