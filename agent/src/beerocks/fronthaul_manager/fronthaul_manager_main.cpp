@@ -117,7 +117,7 @@ static std::shared_ptr<beerocks::logging>
 init_logger(const std::string &file_name, const beerocks::config_file::SConfigLog &log_config,
             int argc, char **argv, const std::string &logger_id = std::string())
 {
-    auto logger = std::make_shared<beerocks::logging>(log_config, file_name, logger_id);
+    auto logger = std::make_shared<beerocks::logging>(file_name, log_config, logger_id);
     if (!logger) {
         std::cout << "Failed to allocated logger to " << file_name;
         return std::shared_ptr<beerocks::logging>();

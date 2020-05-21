@@ -71,9 +71,9 @@ public:
 
     logging(const std::string &module_name, const std::string &config_path = std::string(),
             const std::string &logger_id = std::string());
-    explicit logging(const std::string &module_name, const settings_t &settings,
-                     const std::string &logger_id = std::string(), bool cache_settings = false);
-    logging(const beerocks::config_file::SConfigLog &settings, const std::string &module_name,
+    logging(const std::string &module_name, const settings_t &settings,
+            const std::string &logger_id = std::string(), bool cache_settings = false);
+    logging(const std::string &module_name, const beerocks::config_file::SConfigLog &settings,
             const std::string &logger_id = std::string(), bool cache_settings = false);
     ~logging() = default;
 

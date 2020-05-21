@@ -334,7 +334,7 @@ logging::logging(const std::string &module_name, const settings_t &settings,
     eval_settings();
 }
 
-logging::logging(const beerocks::config_file::SConfigLog &settings, const std::string &module_name,
+logging::logging(const std::string &module_name, const beerocks::config_file::SConfigLog &settings,
                  const std::string &logger_id, bool cache_settings)
     : m_module_name(module_name), m_logfile_size(LOGGING_DEFAULT_MAX_SIZE),
       m_levels(LOG_LEVELS_GLOBAL_DEFAULT), m_syslog_levels(LOG_LEVELS_SYSLOG_DEFAULT)
