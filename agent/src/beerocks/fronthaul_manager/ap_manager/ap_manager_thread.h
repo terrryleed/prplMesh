@@ -24,8 +24,8 @@ namespace son {
 class ap_manager_thread : public beerocks::socket_thread {
 
 public:
-    explicit ap_manager_thread(const std::string &slave_uds_, const std::string &iface,
-                               beerocks::logging &logger);
+    ap_manager_thread(const std::string &slave_uds_, const std::string &iface,
+                      beerocks::logging &logger);
     virtual ~ap_manager_thread();
 
     virtual bool init() override;
