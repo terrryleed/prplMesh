@@ -27,9 +27,7 @@ cACTION_APMANAGER_UP_NOTIFICATION:
 
 cACTION_APMANAGER_CONFIGURE:
   _type: class
-  iface_type: beerocks::eIfaceType
   channel: uint8_t
-  iface_filter_low: uint8_t
 
 cACTION_APMANAGER_JOINED_NOTIFICATION:
   _type: class
