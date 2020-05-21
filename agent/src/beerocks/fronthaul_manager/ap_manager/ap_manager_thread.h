@@ -87,10 +87,7 @@ private:
     std::string m_iface;
     beerocks::logging &m_logger;
     bool m_ap_manager_configured = false;
-    uint8_t wifi_channel;
-    uint8_t m_iface_type;
     bool acs_enabled;
-    bool low_filter;
 
     int bss_steer_valid_int          = BSS_STEER_VALID_INT;
     int bss_steer_imminent_valid_int = BSS_STEER_IMMINENT_VALID_INT;

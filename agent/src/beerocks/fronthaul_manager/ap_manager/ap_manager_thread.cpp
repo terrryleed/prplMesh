@@ -371,9 +371,7 @@ bool ap_manager_thread::handle_cmdu(Socket *sd, ieee1905_1::CmduMessageRx &cmdu_
             return false;
         }
 
-        low_filter   = config->iface_filter_low();
-        m_iface_type = config->iface_type();
-        wifi_channel = config->channel();
+        acs_enabled = config->channel() == 0;
 
         m_ap_manager_configured = true;
 
