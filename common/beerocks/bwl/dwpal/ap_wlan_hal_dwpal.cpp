@@ -2368,10 +2368,10 @@ bool ap_wlan_hal_dwpal::process_dwpal_event(char *buffer, int bufLen, const std:
         FieldsToParse fieldsToParse[] = {
             {NULL /*opCode*/, &numOfValidArgs[0], DWPAL_STR_PARAM, NULL, 0},
             {NULL, &numOfValidArgs[1], DWPAL_STR_PARAM, NULL, 0},
-            {(void *)&msg->params.success, &numOfValidArgs[2], DWPAL_CHAR_PARAM, "success=", 0},
+            {(void *)&msg->params.success, &numOfValidArgs[2], DWPAL_INT_PARAM, "cac_status=", 0},
             {(void *)&msg->params.frequency, &numOfValidArgs[3], DWPAL_INT_PARAM, "freq=", 0},
             {(void *)&msg->params.timeout, &numOfValidArgs[4], DWPAL_INT_PARAM, "timeout=", 0},
-            {(void *)&chan_width, &numOfValidArgs[5], DWPAL_CHAR_PARAM, "chan_width=", 0},
+            {(void *)&chan_width, &numOfValidArgs[5], DWPAL_INT_PARAM, "chan_width=", 0},
             /* Must be at the end */
             {NULL, NULL, DWPAL_NUM_OF_PARSING_TYPES, NULL, 0}};
 
@@ -2382,8 +2382,9 @@ bool ap_wlan_hal_dwpal::process_dwpal_event(char *buffer, int bufLen, const std:
         }
 
         /* TEMP: Traces... */
+        // HOSTAPD_CAC_STAT_FAILED = 0, HOSTAPD_CAC_STAT_SUCCESS = 1, HOSTAPD_CAC_STAT_PAUSED = 2
         LOG(DEBUG) << "numOfValidArgs[2]= " << numOfValidArgs[2]
-                   << " success= " << (int)msg->params.success;
+                   << " cac_status= " << (int)msg->params.success;
         LOG(DEBUG) << "numOfValidArgs[3]= " << numOfValidArgs[3]
                    << " freq= " << msg->params.frequency;
         LOG(DEBUG) << "numOfValidArgs[4]= " << numOfValidArgs[4]
