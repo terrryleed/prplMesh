@@ -1501,7 +1501,10 @@ bool monitor_thread::handle_ap_metrics_query(Socket &sd, ieee1905_1::CmduMessage
         const auto &bssid = std::get<1>(bssid_tuple);
         LOG(DEBUG) << "Received AP_METRICS_QUERY_MESSAGE, mid=" << std::hex << int(mid)
                    << "  bssid " << bssid;
-        if (!mon_stats.add_ap_metrics(cmdu_tx, bssid)) {
+        if (!mon_stats.add_ap_metrics(cmdu_tx, bssid, mon_db.get_sta_count(),
+                                      mon_db.get_radio_node()
+                                          ->ap_metrics_reporting_info()
+                                          .ap_metrics_channel_utilization_reporting_value)) {
             return false;
         }
 
