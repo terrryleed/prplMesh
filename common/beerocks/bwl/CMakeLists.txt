@@ -10,7 +10,9 @@ file(GLOB_RECURSE bwl_common_sources ${MODULE_PATH}/common/*.c*)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 
 # Default defaults
-set(BWL_TYPE "DUMMY")
+if (NOT DEFINED BWL_TYPE)
+    set(BWL_TYPE "DUMMY")
+endif()
 add_definitions(-DBEEROCKS_TMP_PATH="${TMP_PATH}")
 
 if (TARGET_PLATFORM STREQUAL "rdkb")

@@ -2,8 +2,10 @@ project(multiap_framework C CXX)
 
 option(BUILD_EXAMPLES "build examples" OFF)
 
-set(MSGLIB "zmq" CACHE STRING "Which messaging library backend to use")
-set_property(CACHE MSGLIB PROPERTY STRINGS "zmq" "nng" "None")
+if (NOT DEFINED MSGLIB)
+    set(MSGLIB "zmq" CACHE STRING "Which messaging library backend to use")
+    set_property(CACHE MSGLIB PROPERTY STRINGS "zmq" "nng" "None")
+endif()
 
 find_package(json-c REQUIRED)
 
