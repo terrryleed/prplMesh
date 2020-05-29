@@ -280,6 +280,24 @@ bool base_wlan_hal_dummy::set(const std::string &param, const std::string &value
 
 bool base_wlan_hal_dummy::ping() { return true; }
 
+bool base_wlan_hal_dummy::write_status_file(const std::string &filename, const std::string &value)
+{
+    auto full_path{get_status_dir() + "/" + filename};
+    auto full_path_tmp{full_path + ".tmp"};
+    std::ofstream statusfile(full_path_tmp);
+    statusfile << value;
+    if (!statusfile) {
+        LOG(ERROR) << "Failed writing to " << full_path;
+        return false;
+    }
+    statusfile.close();
+    if (rename(full_path_tmp.c_str(), full_path.c_str()) < 0) {
+        LOG(ERROR) << "Failed to rename " << full_path_tmp;
+        return false;
+    }
+    return true;
+}
+
 bool base_wlan_hal_dummy::process_nl_events()
 {
     LOG(ERROR) << "not implemented";
