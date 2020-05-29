@@ -38,6 +38,7 @@ class PrplMeshPrplWRT(openwrt_router.OpenWrtRouter, PrplMeshBase):
         self.kwargs = kwargs
         config = kwargs.get("config", kwargs)
 
+        self.consoles = [self]
         self.linesep = "\r"
 #        self.delaybeforesend = None
 #        self.logfile_read = sys.stdout
@@ -146,7 +147,7 @@ class PrplMeshPrplWRT(openwrt_router.OpenWrtRouter, PrplMeshBase):
 #        match = device.expect_exact(["wlan0.3: start the interface",
 #                              pexpect.EOF, pexpect.TIMEOUT], timeout=90)
         device.sendline("/etc/init.d/prplmesh certification_mode agent")
-        device.expect("CAC timer expired", timeout=90)
+        device.expect("CAC timer expired", timeout=120)
         match = device.expect("device br-lan entered promiscuous mode", timeout=40)
         if match == 0:
             return True

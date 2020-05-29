@@ -192,15 +192,16 @@ def _docker_wait_for_log(container: str, program: str, regex: str, start_line: i
 def _device_wait_for_log(device: None, log_path: str, regex: str,
                          timeout: int, start_line: int = 0):
     """Waits for log matching regex expression to show up."""
-    device.sendline("tail -n +{:d} {} | grep -E \"{}\"".format(int(start_line)+int(1), log_path, regex))
-    device.expect(":/#", timeout)
-    debug("device.before: {}".format(device.before))
-    match = re.search(regex, device.before).group(0)
+    device.sendline("tail -f -n +{:d} {}".format(int(start_line)+int(1), log_path))
+    device.expect(regex, timeout=timeout)
+    match = device.match.group(0)
+    device.sendcontrol('c')
+    device.expect(":/#")
     if match:
         debug("Found '{}'\n\tin {}".format(regex, log_path))
         device.sendline("grep -n \"{}\" {}".format(match, log_path))
-        device.expect(":/#", timeout)
-        matched_line = re.search(r'(?P<line_number>[\d]+):[A-Z]', device.before).group('line_number')
+        device.expect(r"(?P<line_number>[\d]+):[A-Z]", timeout=timeout)
+        matched_line = device.match.group('line_number')
         return (True, matched_line, match)
     else:
         return (False, start_line, None)

@@ -32,3 +32,14 @@ class InitialApConfig(PrplMeshBaseTest):
     @classmethod
     def teardown_class(cls):
         """Teardown method, optional for boardfarm tests."""
+        test = cls.test_obj
+        for dev in test.dev:
+            if dev.agent_entity:
+                print("pexpect obj info:")
+                print(dev.agent_entity.device)
+                print("Device output before teardown:")
+                print(dev.agent_entity.device.before)
+                print(dev.agent_entity.device.after)
+                print("Sniffer - stop")
+                dev.agent_entity.sendcontrol('c')
+                dev.wired_sniffer.stop()
