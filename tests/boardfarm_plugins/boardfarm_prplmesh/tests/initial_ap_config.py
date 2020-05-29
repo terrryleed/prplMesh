@@ -23,9 +23,9 @@ class InitialApConfig(PrplMeshBaseTest):
                 self.check_log(dev.agent_entity.radios[1],
                                r"KWA \(Key Wrap Auth\) success")
                 self.check_log(dev.agent_entity.radios[0],
-                               r".* Controller configuration \(WSC M2 Encrypted Settings\)")
+                               r"Controller configuration \(WSC M2 Encrypted Settings\)")
                 self.check_log(dev.agent_entity.radios[1],
-                               r".* Controller configuration \(WSC M2 Encrypted Settings\)")
+                               r"Controller configuration \(WSC M2 Encrypted Settings\)")
 
                 dev.wired_sniffer.stop()
 

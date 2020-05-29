@@ -16,5 +16,21 @@
                 "conn_cmd": ""
             }
         ]
+    },
+    "rax40-2": {
+        "name": "agent",
+        "board_type": "prplWRT",
+        "role": "agent",
+        "device_iface": "rax2_wan",
+        "connection_type": "local_serial",
+        "conn_cmd": "cu -s 115200 -l /dev/ttyUSB0",
+        "devices": [
+            {
+            "name": "controller",
+            "type": "prplmesh_docker",
+            "role": "controller",
+            "conn_cmd": ""
+            }
+        ]
     }
 }

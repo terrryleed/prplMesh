@@ -11,6 +11,7 @@ import platform
 import re
 import subprocess
 import time
+import pexpect
 
 from capi import UCCSocket
 from opts import opts, debug, err
@@ -189,16 +190,20 @@ def _docker_wait_for_log(container: str, program: str, regex: str, start_line: i
 
 
 def _device_wait_for_log(device: None, log_path: str, regex: str,
-                         start_line: int, timeout: int) -> bool:
-    """Waits for log mathing regex expression to show up."""
-    device.sendline("tail -n10 -f {}".format(log_path))
-    match = device.expect(
-            pattern=[regex, device.pexpect.EOF, device.pexpect.TIMEOUT],
-            timeout=timeout)
-    if match == 1:
-        return True
+                         timeout: int, start_line: int = 0):
+    """Waits for log matching regex expression to show up."""
+    device.sendline("tail -n +{:d} {} | grep -E \"{}\"".format(int(start_line)+int(1), log_path, regex))
+    device.expect(":/#", timeout)
+    debug("device.before: {}".format(device.before))
+    match = re.search(regex, device.before).group(0)
+    if match:
+        debug("Found '{}'\n\tin {}".format(regex, log_path))
+        device.sendline("grep -n \"{}\" {}".format(match, log_path))
+        device.expect(":/#", timeout)
+        matched_line = re.search(r'(?P<line_number>[\d]+):[A-Z]', device.before).group('line_number')
+        return (True, matched_line, match)
     else:
-        return False
+        return (False, start_line, None)
 
 
 class ALEntityDocker(ALEntity):
@@ -364,17 +369,19 @@ class ALEntityPrplWrt(ALEntity):
         else:
             self.config_file_name = '/opt/prplmesh/config/beerocks_agent.conf'
 
-        ucc_port = self.command(("grep \"ucc_listener_port\" {} "
-                                "| cut -d'=' -f2 | cut -d\" \" -f 1").format(self.config_file_name))
+        ucc_port_raw = self.command(("grep \"ucc_listener_port\" {}").format(self.config_file_name))
+        ucc_port = int(re.search(r'ucc_listener_port=(?P<port>[0-9]+)', ucc_port_raw).group('port'))
 
-        device_ip_output = self.command(
-                "ip -f inet addr show {} | head -n 2".format(self.bridge_name))
-        device_ip = re.search(
-            r'inet (?P<ip>[0-9.]+)', device_ip_output.decode('utf-8')).group('ip')
-        self.log_folder = self.command(
-            "grep log_files_path {} | cut -d=\'=\' -f2".format(self.config_file_name))
+        device_ip_raw = self.command(
+            "ip -f inet addr show {} | tail -n 2".format(self.bridge_name))
+        self.device_ip = re.search(
+            r'inet (?P<ip>[0-9.]+)', device_ip_raw).group('ip')
 
-        ucc_socket = UCCSocket(device_ip, ucc_port)
+        log_folder_raw = self.command(
+            "grep log_files_path {}".format(self.config_file_name))
+        self.log_folder = re.search(r'log_files_path=(?P<log_path>[a-zA-Z0-9_\/]+)', log_folder_raw).group('log_path')
+
+        ucc_socket = UCCSocket(self.device_ip, int(ucc_port))
         mac = ucc_socket.dev_get_parameter('ALid')
 
         super().__init__(mac, ucc_socket, installdir, is_controller)
@@ -383,14 +390,16 @@ class ALEntityPrplWrt(ALEntity):
         RadioHostapd(self, "wlan0", device=self)
         RadioHostapd(self, "wlan2", device=self)
 
-    def command(self, *command: str) -> bytes:
+    def command(self, command: str) -> bytes:
         """Execute `command` in device and return its output."""
         self.device.sendline(command)
-        return self.device.read()
+        self.device.expect([":/#", pexpect.EOF, pexpect.TIMEOUT], timeout=10)
+        return self.device.before
 
     def wait_for_log(self, regex: str, start_line: int, timeout: float) -> bool:
         """Poll the entity's logfile until it contains "regex" or times out."""
         program = "controller" if self.is_controller else "agent"
+        # /tmp/beerocks/logs/beerocks_agent_wlan2.log
         return _device_wait_for_log(self.device,
                                     "{}/beerocks_{}.log".format(self.log_folder, program),
                                     regex, start_line, timeout)
@@ -399,21 +408,21 @@ class ALEntityPrplWrt(ALEntity):
 class RadioHostapd(Radio):
     """Abstraction of real Radio in prplWRT device."""
 
-    def __init__(self, agent: ALEntityPrplWrt, bssid: str, device: None):
-        self.iface_name = bssid
-        ip_output = agent.command("ip -o link list dev {}".format(self.iface_name))
-        mac = re.search(r"link/ether (([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2})", ip_output).group(1)
-        self.log_folder = self.command(
-            "grep log_files_path {} | cut -d=\'=\' -f2".format(self.config_file_name))
+    def __init__(self, agent: ALEntityPrplWrt, iface_name: str, device: None):
+        self.iface_name = iface_name
+        self.device = agent.device
+        ip_raw = agent.command("ip link list dev {}".format(self.iface_name))
+        mac = re.search(r"link/ether (([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2})", ip_raw).group(1)
+        self.log_folder = agent.log_folder
         super().__init__(agent, mac)
 
         VirtualAPHostapd(self, mac)
         VirtualAPHostapd(self, mac)
 
-    def wait_for_log(self, regex: str, start_line: int, timeout: float) -> bool:
+    def wait_for_log(self, regex: str, start_line: int, timeout: float):
         ''' Poll the Radio's logfile until it match regular expression '''
         return _device_wait_for_log(self.device, "{}/beerocks_agent_{}.log".format(
-            self.log_folder, self.iface_name), regex, start_line, timeout)
+            self.log_folder, self.iface_name), regex, timeout*10, start_line)
 
 
 class VirtualAPHostapd(VirtualAP):
