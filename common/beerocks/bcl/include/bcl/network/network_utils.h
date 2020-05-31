@@ -94,6 +94,9 @@ public:
     static int get_iface_info(network_utils::iface_info &info, const std::string &iface_name);
     static bool get_raw_iface_info(const std::string &iface_name, raw_iface_info &info);
 
+    static std::shared_ptr<std::unordered_map<std::string, std::string>>
+    get_arp_table(bool mac_as_key = true);
+
     //temp
     static std::string get_mac_from_arp_table(const std::string &ipv4);
 
