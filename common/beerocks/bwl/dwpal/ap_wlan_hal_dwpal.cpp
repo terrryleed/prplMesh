@@ -919,20 +919,22 @@ bool ap_wlan_hal_dwpal::sta_bss_steer(const std::string &mac, const std::string 
         mac
 
         // Transition management parameters
-        + " dialog_token=" + "0" + " Mode=" + "0" + " pref=" + "1" + " abridged=" + "1" +
-        " neighbor=" + bssid + ",0," + std::to_string(oper_class) + "," + std::to_string(chan) +
-        ",0,255";
+        + " dialog_token=" + "0" + " pref=" + "1" + " abridged=" + "1";
 
     // Divide disassoc_timer by 100, because the hostapd expects it to be in beacon interval
     // which is 100ms.
     if (disassoc_timer) {
         cmd += std::string() + " disassoc_imminent=" + "1" +
-               " disassoc_timer=" + std::to_string(disassoc_timer / 100);
+               " disassoc_timer=" + std::to_string(disassoc_timer / beerocks::BEACON_TX_TIME_MS);
     }
 
     if (valid_int) {
         cmd += " valid_int=" + std::to_string(valid_int);
     }
+
+    // Target BSSID
+    cmd += std::string() + " neighbor=" + bssid + ",0," + std::to_string(oper_class) + "," +
+           std::to_string(chan) + ",0,255";
 
     // Send command
     if (!dwpal_send_cmd(cmd)) {

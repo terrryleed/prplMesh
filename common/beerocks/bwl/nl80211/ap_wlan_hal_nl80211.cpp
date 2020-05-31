@@ -236,14 +236,11 @@ bool ap_wlan_hal_nl80211::sta_bss_steer(const std::string &mac, const std::strin
         "BSS_TM_REQ " +
         mac
         // Transition management parameters
-        + " pref=" + "1" + " abridged=" + "1" +
-        // Target BSSID
-        " neighbor=" + bssid + ",0," + std::to_string(oper_class) + "," + std::to_string(chan) +
-        ",0";
+        + " pref=" + "1" + " abridged=" + "1";
 
     if (disassoc_timer) {
         cmd += std::string() + " disassoc_imminent=" + "1" +
-               " disassoc_timer=" + std::to_string(disassoc_timer);
+               " disassoc_timer=" + std::to_string(disassoc_timer / beerocks::BEACON_TX_TIME_MS);
     }
     // " bss_term="  // Unused Param
     // " url="       // Unused Param
@@ -252,6 +249,10 @@ bool ap_wlan_hal_nl80211::sta_bss_steer(const std::string &mac, const std::strin
     if (valid_int) {
         cmd += " valid_int=" + std::to_string(valid_int);
     }
+
+    // Target BSSID
+    cmd += std::string() + " neighbor=" + bssid + ",0," + std::to_string(oper_class) + "," +
+           std::to_string(chan) + ",0,255";
 
     // Send command
     if (!wpa_ctrl_send_msg(cmd)) {
