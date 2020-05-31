@@ -90,9 +90,10 @@ enum eGlobals {
     PHY_RATE_100KB_MAX                      = 8666,
     PHY_RATE_100KB_MIN                      = 72,
     PHY_RATE_100KB_INVALID                  = 0,
-    BSS_STEER_DISASSOC_TIMER_MS             = 200, // ~200ms
-    BSS_STEER_IMMINENT_VALID_INT            = 100,
-    BSS_STEER_VALID_INT                     = 50,
+    BEACON_TX_TIME_MS                       = 100,
+    BSS_STEER_DISASSOC_TIMER_MS             = 2000,
+    BSS_STEER_IMMINENT_VALID_INT            = (BSS_STEER_DISASSOC_TIMER_MS / BEACON_TX_TIME_MS),
+    BSS_STEER_VALID_INT                     = 2, // 200ms
     SON_SLAVE_WATCHDOG_INTERVAL_MSC         = 5000,
     SON_SLAVE_INTERFACE_STATUS_INTERVAL_MSC = 2000,
     IRE_MAX_WIRELESS_RECONNECTION_TIME_MSC  = 6000,
